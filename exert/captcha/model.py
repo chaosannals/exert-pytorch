@@ -19,7 +19,7 @@ class CaptchaNet(nn.Module):
         self.conv2 = nn.Conv2d(5, 10, 5)
         self.conv3 = nn.Conv2d(10, 16, 6)
 
-        # 收敛数据
+        # 线性
         self.fc1 = nn.Linear(4 * 12 * 16, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, 128)
