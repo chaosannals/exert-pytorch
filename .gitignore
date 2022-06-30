@@ -1,4 +1,5 @@
 /.*/
 /assets/
+/ganpic/
 /*.m
 __pycache__
