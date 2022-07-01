@@ -18,11 +18,6 @@ class GeneratorNet(nn.Module):
         c3 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 16)
         c4 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 32)
 
-        # c1 = int(IMAGE_SIZE[0] * 8)
-        # c2 = int(IMAGE_SIZE[0] * 4)
-        # c3 = int(IMAGE_SIZE[0] * 2)
-        # c4 = int(IMAGE_SIZE[0] * 1)
-
         self.lv1 = nn.Sequential(
             # => (50)
             nn.ConvTranspose2d(
@@ -89,7 +84,7 @@ class GeneratorNet(nn.Module):
                 bias=False
             ),
 
-            # => (64, 64, 3)
+            # => (3, 64, 128)
             nn.Tanh()
         )
 

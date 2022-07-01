@@ -8,9 +8,8 @@ def train():
     '''
 
     train_dataset = CaptchDataset('./assets/captchas')
-    test_dataset = CaptchDataset('./assets/captchas')
     trainer = CaptganTrainer('./captgan_g.m', './captgan_d.m')
-    trainer.train(train_dataset, test_dataset)
+    trainer.train(train_dataset)
 
 
 if '__main__' == __name__:

@@ -11,7 +11,7 @@ ANSWER_SET_LEN = len(ANSWER_SET)
 ANSWER_MAX_ID = ANSWER_SET_LEN - 1
 
 CAPTCHA_LEN = 5
-IMAGE_SIZE = (128, 64)
+IMAGE_SIZE = (64, 128)
 IMAGE_CC = 3
 
 
@@ -31,14 +31,25 @@ def answer_v2t(vector):
                 r[i][j] = 1.0
     return torch.Tensor(r)
 
+
 def answer_v2bt(vector):
     r = np.random.random((len(vector), ANSWER_SET_LEN)) * 0.1
     for i, v in enumerate(vector):
         for j in range(ANSWER_SET_LEN):
             if v == j:
                 r[i][j] = 1.0
-    
+
     return torch.Tensor(r).view(1, int(len(vector) * ANSWER_SET_LEN / 2), 1, 2)
+
+def answer_rollbt(batch_size):
+    r = np.random.random(batch_size, CAPTCHA_LEN, ANSWER_SET_LEN) * 0.1
+    for k in range(batch_size):
+        for i, v in answer_rollv():
+            for j in range(ANSWER_SET_LEN):
+                if v == j:
+                    r[k][i][j] = 1.0
+
+    return torch.Tensor(r).view(batch_size, int(CAPTCHA_LEN * ANSWER_SET_LEN / 2), 1, 2)
 
 def answer_rollv(length=CAPTCHA_LEN):
     return [randint(0, ANSWER_MAX_ID) for _ in range(length)]
@@ -65,7 +76,7 @@ def make_transform(size=IMAGE_SIZE):
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
-    
+
 
 class CaptchDataset(data.Dataset):
     '''
@@ -84,10 +95,10 @@ class CaptchDataset(data.Dataset):
         p = self.paths[index]
         s = os.path.splitext(os.path.basename(p))[0]
         r = s.split('-')[1]
-        a = torch.Tensor(answer_s2v(r))
+        v = answer_s2v(r)
         i = Image.open(p)
         d = self.transform(i.convert('RGB'))
-        return d, a
+        return d, answer_v2t(v)
 
     def __len__(self):
         '''
