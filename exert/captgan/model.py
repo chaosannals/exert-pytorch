@@ -37,16 +37,10 @@ class CaptganTrainer:
         self.doptimizer = optim.Adam(
             self.dnet.parameters(), lr=learningRate, betas=(0.5, 0.999))
 
-    def train(self, dataset, epoch_count=100, batch_size=128):
+    def train(self, dataset, epoch_count=100, epoch_turn=100, batch_size=128):
         '''
 
         '''
-
-        img_list = []
-        g_losses = []
-        d_losses = []
-        iters = 0
-
         data_loader = DataLoader(
             dataset,
             batch_size=batch_size,
@@ -59,12 +53,22 @@ class CaptganTrainer:
         flabels = torch.zeros(batch_size)
         flabels.fill_(LABEL_FAKE)
 
+        g_losses = 0
+        d_losses = 0
+
         for epoch in range(epoch_count):
             if epoch > 0:
-                print(f'save :{epoch}')
+                tc = epoch * epoch_turn
+                avg_glosses = g_losses / tc
+                avg_dlosses = d_losses / tc
+                print(f'save :{epoch} avg dl: {avg_dlosses} gl:{avg_glosses}')
                 self.dnet.save(self.dmpath)
                 self.gnet.save(self.gmpath)
+
             for i, (data, labels) in enumerate(data_loader, 0):
+                if i >= epoch_turn:
+                    break
+
                 print(f'[{epoch}-{i}] start:')
                 # 判别
                 self.doptimizer.zero_grad()
@@ -78,6 +82,7 @@ class CaptganTrainer:
 
                 dloss = drloss + dfloss
                 dloss.backward()
+                d_losses += dloss.item()
 
                 drmean = droutput.mean().item()
                 dfmean = dfoutput.mean().item()
@@ -90,10 +95,11 @@ class CaptganTrainer:
                 doutput = self.dnet(fakes).view(-1)
                 gdloss = self.criterion(doutput, rlabels)
                 gdloss.backward()
+                g_losses += g_losses.item()
 
                 gmean = doutput.mean().item()
 
                 self.goptimizer.step()
 
                 if i % 10 == 0:
-                    print(f'dr: {drmean} df: {dfmean} g: {gmean}')
+                    print(f'drm: {drmean} dfm: {dfmean} gm: {gmean}')
