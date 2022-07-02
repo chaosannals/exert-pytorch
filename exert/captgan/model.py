@@ -60,27 +60,40 @@ class CaptganTrainer:
         flabels.fill_(LABEL_FAKE)
 
         for epoch in range(epoch_count):
+            if epoch > 0:
+                print(f'save :{epoch}')
+                self.dnet.save(self.dmpath)
+                self.gnet.save(self.gmpath)
             for i, (data, labels) in enumerate(data_loader, 0):
+                print(f'[{epoch}-{i}] start:')
                 # 判别
                 self.doptimizer.zero_grad()
 
-                droutput = self.dnet(data)
+                droutput = self.dnet(data).view(-1)
                 drloss = self.criterion(droutput, rlabels)
 
                 fakes = self.gnet(labels)
-                dfoutput = self.dnet(fakes.detach())
+                dfoutput = self.dnet(fakes.detach()).view(-1)
                 dfloss = self.criterion(dfoutput, flabels)
 
                 dloss = drloss + dfloss
                 dloss.backward()
+
+                drmean = droutput.mean().item()
+                dfmean = dfoutput.mean().item()
 
                 self.doptimizer.step()
 
                 # 生成
                 self.goptimizer.zero_grad()
 
-                doutput = self.dnet(fakes)
+                doutput = self.dnet(fakes).view(-1)
                 gdloss = self.criterion(doutput, rlabels)
                 gdloss.backward()
 
+                gmean = doutput.mean().item()
+
                 self.goptimizer.step()
+
+                if i % 10 == 0:
+                    print(f'dr: {drmean} df: {dfmean} g: {gmean}')

@@ -29,7 +29,7 @@ def answer_v2t(vector):
         for j in range(ANSWER_SET_LEN):
             if v == j:
                 r[i][j] = 1.0
-    return torch.Tensor(r)
+    return torch.Tensor(r).view(int(len(vector) * ANSWER_SET_LEN / 2), 1, 2)
 
 
 def answer_v2bt(vector):

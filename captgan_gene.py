@@ -2,7 +2,7 @@ import os
 from time import time_ns
 from torchvision.utils import save_image
 from exert.captgan.generator import GeneratorNet
-from exert.captgan.dataset import IMAGE_SIZE, IMAGE_CC, answer_rollv, answer_v2bt, answer_v2s, make_transform
+from exert.captgan.dataset import answer_rollv, answer_v2bt, answer_v2s, make_transform
 
 
 if '__main__' == __name__:

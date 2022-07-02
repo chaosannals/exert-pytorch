@@ -89,7 +89,7 @@ class GeneratorNet(nn.Module):
         )
 
     def forward(self, x):
-        # print(f'in size: {x.size()}')
+        # print(f'g in size: {x.size()}')
         x = self.lv1(x)
         # print(f'x 0 size: {x.size()}')
         x = self.lv2(x)
@@ -99,7 +99,7 @@ class GeneratorNet(nn.Module):
         x = self.lv4(x)
         # print(f'x 3 size: {x.size()}')
         x = self.out(x)
-        # print(f'out size: {x.size()}')
+        # print(f'g out size: {x.size()}')
         return x
 
     def load(self, path):
