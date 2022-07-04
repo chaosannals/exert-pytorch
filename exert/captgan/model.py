@@ -92,7 +92,8 @@ class CaptganTrainer:
                 # 生成
                 self.goptimizer.zero_grad()
 
-                doutput = self.dnet(fakes).view(-1)
+                goutput = self.gnet(labels)
+                doutput = self.dnet(goutput).view(-1)
                 gdloss = self.criterion(doutput, rlabels)
                 gdloss.backward()
                 g_losses += g_losses.item()
