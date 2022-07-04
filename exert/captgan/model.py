@@ -1,10 +1,10 @@
 import os
 import torch
+from loguru import logger
 from torch import nn, optim
 from torch.utils.data.dataloader import DataLoader
 from .discriminator import DiscriminatorNet
 from .generator import GeneratorNet
-from .dataset import answer_rollbt
 
 LABEL_REAL = 1
 LABEL_FAKE = 0
@@ -53,15 +53,15 @@ class CaptganTrainer:
         flabels = torch.zeros(batch_size)
         flabels.fill_(LABEL_FAKE)
 
-        g_losses = 0
-        d_losses = 0
+        g_losses = 0.0
+        d_losses = 0.0
 
         for epoch in range(epoch_count):
             if epoch > 0:
                 tc = epoch * epoch_turn
                 avg_glosses = g_losses / tc
                 avg_dlosses = d_losses / tc
-                print(f'save :{epoch} avg dl: {avg_dlosses} gl:{avg_glosses}')
+                logger.info(f'save :{epoch} avg dl: {avg_dlosses} gl:{avg_glosses}')
                 self.dnet.save(self.dmpath)
                 self.gnet.save(self.gmpath)
 
@@ -69,7 +69,7 @@ class CaptganTrainer:
                 if i >= epoch_turn:
                     break
 
-                print(f'[{epoch}-{i}] start:')
+                logger.info(f'[{epoch}-{i}] start:')
                 # 判别
                 self.doptimizer.zero_grad()
 
@@ -96,11 +96,12 @@ class CaptganTrainer:
                 doutput = self.dnet(goutput).view(-1)
                 gdloss = self.criterion(doutput, rlabels)
                 gdloss.backward()
-                g_losses += g_losses.item()
+                g_losses += gdloss.item()
 
                 gmean = doutput.mean().item()
 
                 self.goptimizer.step()
 
                 if i % 10 == 0:
-                    print(f'drm: {drmean} dfm: {dfmean} gm: {gmean}')
+                    logger.info(f'drm: {drmean} dfm: {dfmean} gm: {gmean}')
+                # logger.info("labels: {0} {1}", rlabels, flabels)
