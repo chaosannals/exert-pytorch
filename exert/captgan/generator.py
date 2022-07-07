@@ -86,6 +86,7 @@ class GeneratorNet(nn.Module):
 
             # => (3, 64, 128)
             nn.Tanh()
+            # nn.ReLU(True) TODO
         )
 
     def forward(self, x):

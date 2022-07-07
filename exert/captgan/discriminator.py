@@ -12,74 +12,75 @@ class DiscriminatorNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        # si = int(CAPTCHA_LEN * ANSWER_SET_LEN / 2)
-        c1 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 4)
-        c2 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 8)
-        c3 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 16)
-        c4 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 32)
+        si = IMAGE_CC
+        c1 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 32)
+        c2 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 16)
+        c3 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 8)
+        c4 = int(IMAGE_SIZE[0] * IMAGE_SIZE[1] / 4)
 
         self.lv1 = nn.Sequential(
-            # => (3, 64, 128)
+            # => (3, ,)
             nn.Conv2d(
-                IMAGE_CC,
-                IMAGE_SIZE[0],
+                si,
+                c1,
                 kernel_size=(4, 4),
                 stride=(2, 2),
                 padding=(1, 1),
                 bias=False
             ),
+            nn.BatchNorm2d(c1),
             nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.lv2 = nn.Sequential(
-            # => (64, 32, 64)
+            # => (, , )
             nn.Conv2d(
-                IMAGE_SIZE[0],
-                IMAGE_SIZE[0] * 2,
+                c1,
+                c2,
                 kernel_size=(4, 4),
                 stride=(2, 2),
                 padding=(1, 1),
                 bias=False
             ),
-            nn.BatchNorm2d(IMAGE_SIZE[0] * 2),
+            nn.BatchNorm2d(c2),
             nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.lv3 = nn.Sequential(
-            # => (128, 16, 32)
+            # => (, , )
             nn.Conv2d(
-                IMAGE_SIZE[0] * 2,
-                IMAGE_SIZE[0] * 4,
+                c2,
+                c3,
                 kernel_size=(4, 4),
                 stride=(2, 2),
                 padding=(1, 1),
                 bias=False
             ),
-            nn.BatchNorm2d(IMAGE_SIZE[0] * 4),
+            nn.BatchNorm2d(c3),
             nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.lv4 = nn.Sequential(
-            # => (128 * 4, , )
+            # => (, , )
             nn.Conv2d(
-                IMAGE_SIZE[0] * 4,
-                IMAGE_SIZE[0] * 8,
+                c3,
+                c4,
                 kernel_size=(4, 4),
-                stride=(2, 2),
+                stride=(3, 3),
                 padding=(1, 1),
                 bias=False
             ),
-            nn.BatchNorm2d(IMAGE_SIZE[0] * 8),
+            nn.BatchNorm2d(c4),
             nn.LeakyReLU(0.2, inplace=True),
         )
 
         self.out = nn.Sequential(
-            # => (128 * 8, ,)
+            # => (, ,)
             nn.Conv2d(
-                IMAGE_SIZE[0] * 8,
+                c4,
                 1,
-                kernel_size=(4, 4),
-                stride=5,
+                kernel_size=(3, 3),
+                stride=(3, 3),
                 padding=0,
                 bias=False
             ),
