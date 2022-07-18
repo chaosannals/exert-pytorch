@@ -104,6 +104,8 @@ class CaptganTrainer2:
 
                 self.goptimizer.step()
 
+                logger.info(f'dl: {dloss} gl: {gdloss}')
+
                 if i % 10 == 0:
                     logger.info(f'drm: {drmean} dfm: {dfmean} gm: {gmean}')
                     
