@@ -18,3 +18,5 @@ target_vocab = {'E': 0, 'I': 1, 'eat': 2, 'meat': 3, 'S': 4}
 encoder_input = torch.LongTensor([[1, 2, 3, 0]]).to(device)  # 我 吃 肉 E, E代表结束词
 decoder_input = torch.LongTensor([[4, 1, 2, 3]]).to(device)  # S I eat meat, S代表开始词, 并右移一位，用于并行训练
 target = torch.LongTensor([[1, 2, 3, 0]]).to(device)  # I eat meat E, 翻译目标
+
+MODEL_PATH = 'model.pt'
