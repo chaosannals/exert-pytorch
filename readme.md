@@ -1,5 +1,12 @@
 # [exert-pytorch](https://github.com/chaosannals/exert-pytorch)
 
+```bash
+# pip cpu
+pip3 install torch torchvision torchaudio
+```
+
+## 旧
+
 Pytorch 的安装要到官网指示不同系统和配置使用不同的安装方式。
 
 注：[官网](https://pytorch.org/)
