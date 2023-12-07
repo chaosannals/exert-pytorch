@@ -14,13 +14,15 @@ target_len = len(target_vocab)
 encoder_output = model.encoder(encoder_input)  
 # 1*5 全是0，表示EEEEE
 decoder_input = torch.zeros(1, target_len).type_as(encoder_input.data)  
-# 表示S开始字符
-next_symbol = 4  
 
+
+# S 开始输出
+next_symbol = SYMBOL_START
 # 5个单词逐个预测【注意：是一个个追加词，不断往后预测的】
 for i in range(target_len):  
     # 譬如i=0第一轮，decoder输入为SEEEE，第二轮为S I EEE，把预测 I 给拼上去，继续循环
-    decoder_input[0][i] = next_symbol  
+    decoder_input[0][i] = next_symbol
+
     # decoder 输出
     decoder_output = model.decoder(decoder_input, encoder_input, encoder_output)
     # 负责将解码器的输出映射到目标词汇表，每个元素表示对应目标词汇的分数
@@ -34,5 +36,5 @@ for i in range(target_len):
             print('第', i, '轮:', k)
             break
 
-    if next_symbol == 0:  # 遇到结尾了，那就完成翻译
+    if next_symbol == SYMBOL_END:  # 遇到结尾了，那就完成翻译
         break

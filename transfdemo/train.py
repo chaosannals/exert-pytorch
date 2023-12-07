@@ -15,12 +15,16 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-1)
 
 for epoch in range(10):
-    # 输出4*5，代表预测出4个词，每个词对应到词典中5个词的概率
-    output = model(encoder_input, decoder_input)  
+    # 训练数据就 1 条， TODO 改用数据集
+    output = model(encoder_input, decoder_input)
+
+    # print(f'encoder_input: {encoder_input}')
+    # print(f'output: {output}')
+
     # 和目标词 I eat meat E做差异计算
-    loss = criterion(output, target.view(-1))  
+    loss = criterion(output, target.view(-1))
     print('Epoch:', '%04d' % (epoch + 1), 'loss =', '{:.6f}'.format(loss))
-    # 这个3个操作：清零梯度、算法梯度、更新参数
+    
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()

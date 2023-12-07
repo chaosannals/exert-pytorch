@@ -3,6 +3,9 @@
 ```bash
 # pip cpu
 pip3 install torch torchvision torchaudio
+
+# 指定阿里源
+pip install -i https://mirrors.aliyun.com/pypi/simple/ jieba
 ```
 
 ## 旧
