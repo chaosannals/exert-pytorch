@@ -8,13 +8,26 @@ SYMBOL_END = 0
 SYMBOL_START = 1 
 
 def load_dict():
+    '''
+    加载词典
+    '''
+
+def save_dict():
+    '''
+    保存词典
+    '''
+
+def merge_jieba_dict():
+    '''
+    读出 jieba 的词典匹配，编码进词典
+    '''
     dr = jieba.get_dict_file()
     d = str(dr.read(), encoding='utf-8')
     lines = d.splitlines()
     words = {}
     for i, line in (enumerate(lines)):
         word = line.split(' ')[0]
-        words[str(i)] = word
+        words[word] = i
     return words
 
 # jieba.load_userdict('dict.txt')
