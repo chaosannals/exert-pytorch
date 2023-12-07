@@ -26,6 +26,7 @@ class MultiHeadAttention(nn.Module):
         self.W_Q = nn.Linear(d_model, d_k * n_heads, bias=False)
         self.W_K = nn.Linear(d_model, d_k * n_heads, bias=False)
         self.W_V = nn.Linear(d_model, d_v * n_heads, bias=False)
+        self.sdpa = ScaledDotProductAttention()
         self.fc = nn.Linear(d_v * n_heads, d_model, bias=False)  # ff 全连接
         self.layer_norm = nn.LayerNorm(d_model)  # normal 归一化
 
@@ -46,7 +47,7 @@ class MultiHeadAttention(nn.Module):
         attn_mask = attn_mask.unsqueeze(1).repeat(1, n_heads, 1, 1)
 
         # 返回1*2*4*3，2个头，4*3为带上关注关系的4词
-        prob = ScaledDotProductAttention()(Q, K, V, attn_mask)
+        prob = self.sdpa(Q, K, V, attn_mask)
 
         # 把2头重新拼接起来，变为 1*4*6
         prob = prob.transpose(1, 2).contiguous()
@@ -125,10 +126,11 @@ class Transformer(nn.Module):
         self.fc = nn.Linear(d_model, len(target_vocab), bias=False)
 
     def forward(self, encoder_input, decoder_input):
-        # 入 1*4，出 1*4*6，作用："我吃肉E"，并带上三词间的关注力信息
+        # 编码
         encoder_output = self.encoder(encoder_input)
-        # 入 1*4, 1*4, 1*4*6=encoder_output
+        # 解码
         decoder_output = self.decoder(decoder_input, encoder_input, encoder_output)
+        
         # 预测出4个词，每个词对应到词典中5个词的概率，如下
         # tensor([[[ 0.0755, -0.2646,  0.1279, -0.3735, -0.2351],[-1.2789,  0.6237, -0.6452,  1.1632,  0.6479]]]
         decoder_logits = self.fc(decoder_output)
