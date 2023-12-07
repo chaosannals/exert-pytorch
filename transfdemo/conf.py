@@ -1,8 +1,10 @@
 import torch
 
+# 字典维度，调参时要根据训练资料量（训练资料总体词汇量）调整。
+# 越大表现力越强（词汇量大），但是训练难度越大，模型越大。
+# 越小表现力越弱（词汇量小），但是训练难度越小，模型越小。
+d_model = 10
 
-d_model = 6  # embedding size
-# d_model = 3  # embedding size
 d_ff = 12  # feedforward nerual network  dimension
 d_k = d_v = 3  # dimension of k(same as q) and v
 n_heads = 2  # number of heads in multihead attention

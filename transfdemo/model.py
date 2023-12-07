@@ -71,6 +71,7 @@ def get_attn_subsequent_mask(seq):  # decoder的自我顺序注意力遮盖，�
     subsequent_mask = np.triu(np.ones(attn_shape), k=1)
     subsequent_mask = torch.from_numpy(subsequent_mask)
     return subsequent_mask
+
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
@@ -92,7 +93,7 @@ class Decoder(nn.Module):
     def __init__(self):
         super(Decoder, self).__init__()
         self.target_embedding = nn.Embedding(len(target_vocab), d_model)
-        self.attention = MultiHeadAttention()
+        self.attention = MultiHeadAttention() # 只有1级
 
     # 三入参形状分别为 1*4, 1*4, 1*4*6，前两者未被embedding，注意后面这个是 encoder_output
     def forward(self, decoder_input, encoder_input, encoder_output):
@@ -133,3 +134,12 @@ class Transformer(nn.Module):
         decoder_logits = self.fc(decoder_output)
         res = decoder_logits.view(-1, decoder_logits.size(-1))
         return res
+    
+class Subare(nn.Module):
+    def __init__(self):
+        super(Subare, self).__init__()
+        self.lv1 = Transformer()
+        self.lv2 = Transformer()
+
+    def forward(self, encoder_input, decoder_input):
+        lv1_output = self.lv1(encoder_input, decoder_input)
