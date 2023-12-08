@@ -6,11 +6,13 @@ import jieba
 
 SYMBOL_END = 0
 SYMBOL_START = 1 
+DICT_PATH = '1.dict.json'
 
 def load_dict():
     '''
     加载词典
     '''
+
 
 def save_dict():
     '''
